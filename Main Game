@@ -1,0 +1,90 @@
+int main() {
+    srand(time(0));  // Random seed for spawning enemies
+
+    RenderWindow window(VideoMode(800, 600), "Top-Down Shooter");  // Create the window
+    Player player(375, 550);  // Create player at the bottom of the screen
+    Bullet bullet;  // Initialize the bullet
+    std::vector<Enemy> enemies;  // Container for the enemies
+    int score = 0;  // Initialize score
+    bool gameOver = false;  // Flag to check if the game is over
+
+    Clock clock;  // Clock to handle delta time
+    float spawnTimer = 0.0f;  // Timer to control enemy spawning
+    float spawnInterval = 1.5f;  // Interval between enemy spawns
+
+    while (window.isOpen()) {
+        float deltaTime = clock.restart().asSeconds();  // Time per frame
+        Event event;
+        while (window.pollEvent(event)) {  // Event handling loop
+            if (event.type == Event::Closed)
+                window.close();  // Close window if user clicks close button
+        }
+
+        // Game over screen check
+        if (gameOver) {
+            window.clear();
+            // Display Game Over Text here (not implemented in code)
+            window.display();
+            continue;
+        }
+
+        // Player movement controls
+        if (Keyboard::isKeyPressed(Keyboard::Left)) player.moveLeft();
+        if (Keyboard::isKeyPressed(Keyboard::Right)) player.moveRight();
+
+        // Player shooting logic
+        if (Keyboard::isKeyPressed(Keyboard::Space) && !bullet.isAlive)
+            bullet.shoot(player.shape.getPosition().x, player.shape.getPosition().y);
+
+        // Update bullet position
+        bullet.update();
+
+        // Enemy spawning logic
+        spawnTimer += deltaTime;
+        if (spawnTimer >= spawnInterval) {
+            spawnTimer = 0;
+            float x = rand() % 750;  // Random x position for enemy
+            enemies.push_back(Enemy(x, 0));  // Spawn a new enemy at top
+        }
+
+        // Update enemies (move them down)
+        for (auto& enemy : enemies) {
+            enemy.moveDown();
+            // Check for collisions between bullet and enemy
+            if (enemy.isAlive && bullet.isAlive && bullet.shape.getGlobalBounds().intersects(enemy.shape.getGlobalBounds())) {
+                enemy.isAlive = false;  // Destroy enemy
+                bullet.isAlive = false;  // Destroy bullet
+                score += 10;  // Increase score
+            }
+        }
+
+        // Collision detection with player and enemies
+        for (auto& enemy : enemies) {
+            if (enemy.isAlive && player.shape.getGlobalBounds().intersects(enemy.shape.getGlobalBounds())) {
+                gameOver = true;  // End game if player collides with enemy
+            }
+        }
+
+        // Clear and render all game components
+        window.clear();
+        player.draw(window);  // Draw the player spaceship
+        bullet.draw(window);  // Draw the bullet
+        for (auto& enemy : enemies) {  // Draw all enemies
+            enemy.draw(window);
+        }
+
+        // Display score
+        Text scoreText;
+        Font font;
+        font.loadFromFile("arial.ttf");  // Load font for score display
+        scoreText.setFont(font);
+        scoreText.setString("Score: " + std::to_string(score));
+        scoreText.setCharacterSize(24);
+        scoreText.setFillColor(Color::White);
+        window.draw(scoreText);  // Draw the score
+
+        window.display();  // Update the window
+    }
+
+    return 0;
+}
