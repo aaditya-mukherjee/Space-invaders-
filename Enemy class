@@ -1,0 +1,24 @@
+class Enemy {
+public:
+    RectangleShape shape;  // Represents the enemy
+    float speed = 1.0f;    // Speed at which the enemy moves
+    bool isAlive = true;   // If true, the enemy is still alive and visible
+
+    // Constructor initializes the enemy's position and appearance
+    Enemy(float x, float y) {
+        shape.setSize(Vector2f(50, 50));  // Enemy size
+        shape.setFillColor(Color::Red);   // Enemy color
+        shape.setPosition(x, y);          // Initial position of the enemy
+    }
+
+    // Move the enemy down the screen
+    void moveDown() {
+        if (isAlive)
+            shape.move(0, speed);  // Move the enemy downwards
+    }
+
+    // Draw the enemy to the screen
+    void draw(RenderWindow& window) {
+        if (isAlive) window.draw(shape);  // Only draw if the enemy is alive
+    }
+};
