@@ -1,0 +1,32 @@
+class Bullet {
+public:
+    RectangleShape shape;  // Represents the bullet
+    float speed = 10.0f;   // Speed at which the bullet moves
+    bool isAlive = false;  // If true, the bullet is in motion; false when it is not
+
+    // Constructor to initialize the bullet's shape
+    Bullet() {
+        shape.setSize(Vector2f(5, 10));  // Bullet size
+        shape.setFillColor(Color::Red);  // Bullet color
+    }
+
+    // Shoot a bullet from the player's position
+    void shoot(float x, float y) {
+        shape.setPosition(x + 22.5f, y); // Position bullet above the player (centered horizontally)
+        isAlive = true; // Make the bullet "alive" and move upwards
+    }
+
+    // Update the bullet's movement (move upwards)
+    void update() {
+        if (isAlive) {
+            shape.move(0, -speed);  // Move the bullet upwards
+            if (shape.getPosition().y < 0)  // If the bullet goes off the screen
+                isAlive = false;  // Mark it as not alive
+        }
+    }
+
+    // Draw the bullet to the screen
+    void draw(RenderWindow& window) {
+        if (isAlive) window.draw(shape);  // Only draw if the bullet is alive
+    }
+};
