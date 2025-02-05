@@ -1,0 +1,29 @@
+class Player {
+public:
+    RectangleShape shape;  // Represents the spaceship
+    float speed = 5.0f;    // Movement speed of the player
+    
+    // Constructor initializes player position and appearance
+    Player(float x, float y) {
+        shape.setSize(Vector2f(50, 50));  // Player spaceship size
+        shape.setFillColor(Color::Green); // Player color
+        shape.setPosition(x, y);          // Initial position of the player
+    }
+
+    // Move the spaceship to the left
+    void moveLeft() {
+        if (shape.getPosition().x > 0) // Prevents moving out of bounds
+            shape.move(-speed, 0);
+    }
+
+    // Move the spaceship to the right
+    void moveRight() {
+        if (shape.getPosition().x < 750) // Prevents moving out of bounds
+            shape.move(speed, 0);
+    }
+
+    // Draw the player (spaceship) to the screen
+    void draw(RenderWindow& window) {
+        window.draw(shape);  // Draw the player shape (spaceship)
+    }
+};
